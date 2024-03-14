@@ -3,25 +3,25 @@ import { Vector2, vector2 } from "simulationjsv2";
 export class Graph<K, V> {
   private values: Map<K, V>;
   private connections: Map<K, K[]>;
-  private idFn: (val: V) => K;
+  private kenFn: (val: V) => K;
 
-  constructor(idFn: (val: V) => K) {
+  constructor(keyFn: (val: V) => K) {
     this.connections = new Map();
     this.values = new Map();
-    this.idFn = idFn;
+    this.kenFn = keyFn;
   }
 
   addConnection(from: V, to: V) {
-    const fromId = this.idFn(from);
-    const toId = this.idFn(to);
+    const fromKey = this.kenFn(from);
+    const toKey = this.kenFn(to);
 
-    this.values.set(fromId, from);
-    this.values.set(toId, to);
+    this.values.set(fromKey, from);
+    this.values.set(toKey, to);
 
-    const connections = this.connections.get(fromId) || [];
-    connections.push(toId);
+    const connections = this.connections.get(fromKey) || [];
+    connections.push(toKey);
 
-    this.connections.set(fromId, connections);
+    this.connections.set(fromKey, connections);
   }
 
   connectionsFromKey(key: K) {
@@ -33,12 +33,12 @@ export class Graph<K, V> {
   }
 }
 
-const vectorToId = (mazeLen: number, vec: Vector2) =>
+const vectorToKey = (mazeLen: number, vec: Vector2) =>
   vec[0] * ((mazeLen - 1) / 2) + vec[1];
 
 const generateMazeGraph = (maze: number[][]) => {
   const graph = new Graph<number, Vector2>((vec: Vector2) =>
-    vectorToId(maze.length, vec),
+    vectorToKey(maze[0].length, vec),
   );
 
   for (let i = 1; i < maze.length - 1; i += 2) {
@@ -55,10 +55,12 @@ const generateMazeGraph = (maze: number[][]) => {
   return graph;
 };
 
-const initMaze = (width: number, height: number) =>
-  Array(height)
+export const initMaze = (rows: number, cols: number) =>
+  Array<number[]>(rows)
     .fill([])
-    .map(() => Array(width).fill(0));
+    .map(() => Array<number>(cols).fill(0));
+
+export const cloneMaze = (maze: number[][]) => maze.map((row) => [...row]);
 
 const getFilteredConnections = <T, K>(
   graph: Graph<T, K>,
@@ -69,31 +71,30 @@ const getFilteredConnections = <T, K>(
 };
 
 const addStartEnd = (maze: number[][]) => {
-  maze[1][0] = 1;
+  maze[0][1] = 1;
 
-  maze[maze.length - 2][maze[maze.length - 1].length - 1] = 1;
+  maze[maze.length - 1][maze[maze.length - 1].length - 2] = 1;
 
   return maze;
 };
 
-export const generateMaze = (width: number, height: number) => {
-  const maze = initMaze(width, height);
+export const generateMaze = (rows: number, cols: number) => {
+  const maze = initMaze(rows, cols);
+  const steps: [number, number][] = [];
 
   const graph = generateMazeGraph(maze);
   const visited: Set<number> = new Set();
+  const idStack: number[] = [vectorToKey(cols, vector2(1, 1))];
 
-  let idStack: number[] = [vectorToId(width, vector2(1, 1))];
-
-  for (let i = 0; i < width * height; i++) {
+  for (let i = 0; i < rows * cols; i++) {
     if (idStack.length === 0) break;
 
     const prevKey = idStack[idStack.length - 2];
-    const id = idStack[idStack.length - 1];
+    const key = idStack[idStack.length - 1];
 
-    visited.add(id);
+    visited.add(key);
 
-    const pos = graph.fromKey(id)!;
-    maze[pos[0]][pos[1]] = 1;
+    const pos = graph.fromKey(key)!;
 
     if (prevKey) {
       const prevPos = graph.fromKey(prevKey)!;
@@ -103,10 +104,21 @@ export const generateMaze = (width: number, height: number) => {
         (pos[1] + prevPos[1]) / 2,
       );
 
+      if (maze[midPos[0]][midPos[1]] === 0) {
+        steps.push([midPos[0], midPos[1]]);
+      }
+
       maze[midPos[0]][midPos[1]] = 1;
     }
 
-    const connections = getFilteredConnections(graph, id, visited);
+    if (maze[pos[0]][pos[1]] === 0) {
+      steps.push([pos[0], pos[1]]);
+    }
+
+    maze[pos[0]][pos[1]] = 1;
+
+    const connections = getFilteredConnections(graph, key, visited);
+
     if (connections.length === 0) {
       idStack.pop();
       continue;
@@ -117,5 +129,5 @@ export const generateMaze = (width: number, height: number) => {
 
   addStartEnd(maze);
 
-  return maze;
+  return [maze, steps] as const;
 };

@@ -4,7 +4,7 @@ import Maze from "./components/Maze";
 const App = () => {
   return (
     <div class="root">
-      <Maze height={51} width={51} squareSize={10} />
+      <Maze height={51} width={51} squareSize={10} animationDelay={8} />
     </div>
   );
 };
