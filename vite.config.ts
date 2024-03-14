@@ -3,4 +3,7 @@ import pulse from "@jacksonotto/vite-plugin-pulse";
 
 export default defineConfig({
   plugins: [pulse()],
+  build: {
+    minify: false,
+  },
 });

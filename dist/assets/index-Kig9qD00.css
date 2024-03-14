@@ -1,0 +1,67 @@
+.root {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  background: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+button:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+button:active {
+  transform: translateY(2px);
+}
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 48px;
+  height: 26px;
+  border: 2px solid #777;
+  border-radius: 100px;
+  padding: 2px;
+  cursor: pointer;
+}
+
+.switch input {
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  border-radius: 100%;
+  background: #007bff;
+  height: calc(100% - 4px);
+  aspect-ratio: 1;
+}
+
+.slider.active {
+  right: 2px;
+}.maze {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+* {
+  padding: 0;
+  margin: 0;
+  font-family: sans-serif;
+  box-sizing: border-box;
+}
+
+body {
+  height: 100vh;
+}

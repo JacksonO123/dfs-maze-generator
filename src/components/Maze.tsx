@@ -5,9 +5,10 @@ import {
   Simulation,
   colorf,
 } from "simulationjsv2";
-import "./Maze.css";
-import { onMount } from "@jacksonotto/pulse";
+import Switch from "./Switch";
+import { createSignal, onMount } from "@jacksonotto/pulse";
 import { cloneMaze, generateMaze, initMaze } from "../utils/graph";
+import "./Maze.scss";
 
 type MazeProps = {
   height: number;
@@ -17,7 +18,9 @@ type MazeProps = {
 };
 
 const Maze = (props: MazeProps) => {
-  const animate = false;
+  const [animate, setAnimate] = createSignal(false);
+
+  // const animate = false;
   const animationDelay = props.animationDelay || 10;
   const squareCollection = new SceneCollection("squares");
   let mazeStates: number[][][] = [];
@@ -28,11 +31,13 @@ const Maze = (props: MazeProps) => {
 
     for (let i = 0; i < maze.length; i++) {
       for (let j = 0; j < maze[i].length; j++) {
+        if (maze[i][j] > 0) continue;
+
         const square = new Square(
           vector2(j * props.squareSize, i * props.squareSize),
           props.squareSize,
           props.squareSize,
-          colorf(maze[i][j] * 255),
+          colorf(0),
         );
 
         squareCollection.add(square);
@@ -52,22 +57,32 @@ const Maze = (props: MazeProps) => {
     currentState = mazeStates.length - 1;
   };
 
+  let timeoutIds: number[] = [];
   const generate = () => {
+    timeoutIds.forEach((id) => clearTimeout(id));
+
+    drawMaze(initMaze(props.height, props.width));
+
     mazeStates = [];
+    const newTimeoutIds = [];
 
     const [maze, steps] = generateMaze(props.height, props.width);
 
     setMazeStates(steps);
 
-    if (animate) {
+    if (animate()) {
       for (let i = 0; i < mazeStates.length; i++) {
-        setTimeout(() => {
+        const timeoutId = setTimeout(() => {
           drawMaze(mazeStates[i]);
         }, i * animationDelay);
+
+        newTimeoutIds.push(timeoutId);
       }
     } else {
       drawMaze(maze);
     }
+
+    timeoutIds = newTimeoutIds;
   };
 
   onMount(() => {
@@ -88,6 +103,10 @@ const Maze = (props: MazeProps) => {
     });
   });
 
+  const handleAnimateChange = (active: boolean) => {
+    setAnimate(active);
+  };
+
   return (
     <div
       class="maze"
@@ -96,7 +115,10 @@ const Maze = (props: MazeProps) => {
         width: `${props.width * props.squareSize}px`,
       }}
     >
-      <button onClick={generate}>Generate</button>
+      <div class="controls">
+        <button onClick={generate}>Generate</button>
+        <Switch onChange={handleAnimateChange}>Animate</Switch>
+      </div>
       <canvas id="canvas" />
     </div>
   );
