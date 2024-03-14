@@ -128,6 +128,8 @@ export const generateMaze = (rows: number, cols: number) => {
   }
 
   addStartEnd(maze);
+  steps.push([0, 1]);
+  steps.push([maze[0].length - 1, maze.length - 2]);
 
   return [maze, steps] as const;
 };

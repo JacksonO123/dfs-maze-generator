@@ -12,8 +12,8 @@ dependencies:
     specifier: latest
     version: 0.1.1
   simulationjsv2:
-    specifier: ^0.1.3
-    version: 0.1.3
+    specifier: ^0.1.4
+    version: 0.1.4
   vite:
     specifier: ^5.1.4
     version: 5.1.6(@types/node@20.11.27)
@@ -892,8 +892,8 @@ packages:
     hasBin: true
     dev: false
 
-  /simulationjsv2@0.1.3:
-    resolution: {integrity: sha512-vyfHJEBDUK9A8STtc0w7TwBkO5Kza+IbI/MM6iVgnjirMaghQgN2jAe0XA289qupn4K4fRQ/ze7CMUGmDsrS+w==}
+  /simulationjsv2@0.1.4:
+    resolution: {integrity: sha512-0/it34lhEUGUWu7Wp/71ztPFU3ysKVBD0u+KvXgjtB6HCeoIl3mntH6g8xN6XseBM3+ngjxyuq2nEW5eIIPovw==}
     dependencies:
       '@webgpu/types': 0.1.40
       wgpu-matrix: 2.5.1

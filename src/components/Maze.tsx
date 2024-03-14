@@ -17,7 +17,7 @@ type MazeProps = {
 };
 
 const Maze = (props: MazeProps) => {
-  const animate = true;
+  const animate = false;
   const animationDelay = props.animationDelay || 10;
   const squareCollection = new SceneCollection("squares");
   let mazeStates: number[][][] = [];
