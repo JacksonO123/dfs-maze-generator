@@ -9,7 +9,7 @@
     "@jacksonotto/pulse": "^0.3.2",
     "@jacksonotto/vite-plugin-pulse": "latest",
     "sass": "^1.72.0",
-    "simulationjsv2": "^0.1.4",
+    "simulationjsv2": "^0.1.5",
     "vite": "^5.1.4"
   }
 }

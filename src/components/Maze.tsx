@@ -4,6 +4,8 @@ import {
   Square,
   Simulation,
   colorf,
+  Camera,
+  vector3,
 } from "simulationjsv2";
 import Switch from "./Switch";
 import { createSignal, onMount } from "@jacksonotto/pulse";
@@ -20,7 +22,6 @@ type MazeProps = {
 const Maze = (props: MazeProps) => {
   const [animate, setAnimate] = createSignal(false);
 
-  // const animate = false;
   const animationDelay = props.animationDelay || 10;
   const squareCollection = new SceneCollection("squares");
   let mazeStates: number[][][] = [];
@@ -86,7 +87,7 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
-    const canvas = new Simulation("canvas");
+    const canvas = new Simulation("canvas", new Camera(vector3()), true);
     canvas.fitElement();
     canvas.start();
 
