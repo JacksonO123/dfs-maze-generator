@@ -95,9 +95,9 @@ const Maze = (props: MazeProps) => {
     generate();
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") Math.max(currentState--, 0);
+      if (e.key === "ArrowLeft") currentState = Math.max(currentState - 1, 0);
       else if (e.key === "ArrowRight")
-        Math.min(currentState++, mazeStates.length - 1);
+        currentState = Math.min(currentState + 1, mazeStates.length - 1);
 
       drawMaze(mazeStates[currentState]);
     });
