@@ -129,7 +129,7 @@ export const generateMaze = (rows: number, cols: number) => {
 
   addStartEnd(maze);
   steps.push([0, 1]);
-  steps.push([maze.length - 2, maze[0].length - 1]);
+  steps.push([maze.length - 1, maze[0].length - 2]);
 
   return [maze, steps] as const;
 };
