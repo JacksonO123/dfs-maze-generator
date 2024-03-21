@@ -87,7 +87,7 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
-    const canvas = new Simulation("canvas", new Camera(vector3()), true);
+    const canvas = new Simulation("canvas");
     canvas.fitElement();
     canvas.start();
 
