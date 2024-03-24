@@ -15,8 +15,8 @@ dependencies:
     specifier: ^1.72.0
     version: 1.72.0
   simulationjsv2:
-    specifier: ^0.2.4
-    version: 0.2.4
+    specifier: ^0.2.8
+    version: 0.2.8
   vite:
     specifier: ^5.1.4
     version: 5.1.6(@types/node@20.11.27)(sass@1.72.0)
@@ -999,11 +999,11 @@ packages:
     hasBin: true
     dev: false
 
-  /simulationjsv2@0.2.4:
-    resolution: {integrity: sha512-KRCgUUdwcHyUyMbZsYj3a8n7AY8jqYx0Zy6ohwOMJRX3tRDY4WTpiMo6nkYXKs17UZXWPY9VMAtzCucc0TMlhQ==}
+  /simulationjsv2@0.2.8:
+    resolution: {integrity: sha512-TS3ETM0ryztGuRsrEeKXOy/R8qOQI94A9VQO9P+a+6FNfWhcffD95X0XcxVT6pe9U58Ucqra/MHLuehUzyRh1Q==}
     dependencies:
       '@webgpu/types': 0.1.40
-      wgpu-matrix: 2.5.1
+      wgpu-matrix: 2.6.1
     dev: false
 
   /source-map-js@1.0.2:
@@ -1092,8 +1092,8 @@ packages:
       fsevents: 2.3.3
     dev: false
 
-  /wgpu-matrix@2.5.1:
-    resolution: {integrity: sha512-fEKK2Hm3JW0KEko2CdrKEg4d81KBKU8UXGhX0kb//3s0A1MrXFG37jzCbvuRdx0XtBs0923oFvSjevwNI5G4Eg==}
+  /wgpu-matrix@2.6.1:
+    resolution: {integrity: sha512-SSoL/FrWyFXY50WtuYWCioWzRTSiqBGw09yRJpCAVr5T5Qymz2if5gumKMADEqt7dvxKxDdXreL5FbvNdBMYUg==}
     dev: false
 
   /yallist@3.1.1:

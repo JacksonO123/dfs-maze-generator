@@ -6,6 +6,7 @@ import {
   colorf,
   Camera,
   vector3,
+  color,
 } from "simulationjsv2";
 import Switch from "./Switch";
 import { createSignal, onMount } from "@jacksonotto/pulse";
@@ -30,18 +31,25 @@ const Maze = (props: MazeProps) => {
   const drawMaze = (maze: number[][]) => {
     squareCollection.empty();
 
+    const fill = squareCollection.getScene().length === 0;
+
     for (let i = 0; i < maze.length; i++) {
       for (let j = 0; j < maze[i].length; j++) {
-        if (maze[i][j] > 0) continue;
+        if (fill) {
+          const square = new Square(
+            vector2(j * props.squareSize, i * props.squareSize),
+            props.squareSize,
+            props.squareSize,
+            maze[i][j] === 1 ? colorf(255) : colorf(0),
+          );
 
-        const square = new Square(
-          vector2(j * props.squareSize, i * props.squareSize),
-          props.squareSize,
-          props.squareSize,
-          colorf(0),
-        );
-
-        squareCollection.add(square);
+          squareCollection.add(square);
+        } else {
+          const index = i * maze[0].length + j;
+          squareCollection
+            .getScene()
+            [index].fill(maze[i][j] === 1 ? colorf(255) : colorf(0));
+        }
       }
     }
   };
@@ -87,7 +95,7 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
-    const canvas = new Simulation("canvas");
+    const canvas = new Simulation("canvas", new Camera(vector3()), true);
     canvas.fitElement();
     canvas.start();
 
