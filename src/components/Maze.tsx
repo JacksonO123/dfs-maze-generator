@@ -120,8 +120,13 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
+<<<<<<< HEAD
     // const showFps = false;
     const showFps = true;
+=======
+    const showFps = false;
+    // const showFps = true;
+>>>>>>> 38cd321 (perf improvement with instancing)
     const canvas = new Simulation("canvas", new Camera(vector3()), showFps);
     canvas.fitElement();
     canvas.start();
