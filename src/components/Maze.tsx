@@ -58,7 +58,7 @@ const Maze = (props: MazeProps) => {
     squareInstance.setNumInstances(squareOccurances);
     const instances = squareInstance.getInstances();
 
-    let squareCount = 1;
+    let squareCount = 0;
 
     for (let i = 0; i < maze.length; i++) {
       for (let j = 0; j < maze[i].length; j++) {
@@ -120,13 +120,8 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
-<<<<<<< HEAD
-    // const showFps = false;
-    const showFps = true;
-=======
     const showFps = false;
     // const showFps = true;
->>>>>>> 38cd321 (perf improvement with instancing)
     const canvas = new Simulation("canvas", new Camera(vector3()), showFps);
     canvas.fitElement();
     canvas.start();
