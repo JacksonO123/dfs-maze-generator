@@ -56,8 +56,6 @@ const Maze = (props: MazeProps) => {
     const squareOccurances = countOccurances(maze, 0);
 
     squareInstance.setNumInstances(squareOccurances);
-    const instances = squareInstance.getInstances();
-
     let squareCount = 0;
 
     for (let i = 0; i < maze.length; i++) {
@@ -71,12 +69,10 @@ const Maze = (props: MazeProps) => {
         );
         mat4.translate(mat, pos, mat);
 
-        instances[squareCount] = mat;
+        squareInstance.setInstance(squareCount, mat);
         squareCount++;
       }
     }
-
-    squareInstance.setInstance(0, matrix4());
   };
 
   const setMazeStates = (steps: [number, number][]) => {
@@ -120,8 +116,8 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
-    const showFps = false;
-    // const showFps = true;
+    // const showFps = false;
+    const showFps = true;
     const canvas = new Simulation("canvas", new Camera(vector3()), showFps);
     canvas.fitElement();
     canvas.start();
