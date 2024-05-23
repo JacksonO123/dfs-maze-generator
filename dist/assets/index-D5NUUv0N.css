@@ -26,12 +26,21 @@ button:active {
 .switch {
   position: relative;
   display: inline-block;
-  width: 48px;
+  width: 44px;
   height: 26px;
-  border: 2px solid #777;
+  border: 2px solid transparent;
   border-radius: 100px;
-  padding: 2px;
+  padding: 1px;
   cursor: pointer;
+  transition: 0.15s;
+}
+
+.switch:has(.slider.active) {
+  background: #007bff;
+}
+
+.switch:has(.slider.inactive) {
+  background: #ccc;
 }
 
 .switch input {
@@ -42,20 +51,41 @@ button:active {
 .slider {
   position: absolute;
   border-radius: 100%;
-  background: #007bff;
-  height: calc(100% - 4px);
+  background: #fff;
+  height: calc(100% - 2px);
   aspect-ratio: 1;
+  top: 1px;
+  transition: 0.15s;
+}
+
+.slider.inactive {
+  right: calc(100% - 26px + 5px);
 }
 
 .slider.active {
-  right: 2px;
+  right: 1px;
+}
+
+.switch-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.switch-wrapper .label {
+  font-size: 16px;
+  font-weight: 500;
 }.maze {
   display: flex;
   flex-direction: column;
   gap: 12px;
   align-items: flex-start;
 }
-* {
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}* {
   padding: 0;
   margin: 0;
   font-family: sans-serif;

@@ -320,12 +320,12 @@ const createComponent = (comp, props) => {
   return res;
 };
 const template = (str, _, isSvg) => {
-  const create = () => {
+  const create2 = () => {
     const el2 = document.createElement("template");
     el2.innerHTML = str;
     return isSvg ? el2.content.firstChild.firstChild : el2.content.firstChild;
   };
-  const el = create();
+  const el = create2();
   return () => el == null ? void 0 : el.cloneNode(true);
 };
 const insert = (parent, accessor, marker = null, initial) => {
@@ -389,9 +389,16 @@ const onMount = (cb) => {
   mountEvents.push(cb);
 };
 const className = (el, classStr) => {
-  const classes = classStr.split(" ");
-  console.log(el.classList, classes);
-  classes.forEach((item) => el.classList.add(item));
+  const classes = new Set(classStr.split(" "));
+  el.classList.forEach((item) => {
+    if (!classes.has(item))
+      el.classList.remove(item);
+  });
+  classes.forEach((item) => {
+    if (item.length > 0 && !el.classList.contains(item)) {
+      el.classList.add(item);
+    }
+  });
 };
 const delegateEvents = (events, doc = document) => {
   const e = doc[$$EVENTS] || (doc[$$EVENTS] = /* @__PURE__ */ new Set());
@@ -468,10 +475,10 @@ function round$2(v, dst) {
   dst[1] = Math.round(v[1]);
   return dst;
 }
-function clamp$2(v, min = 0, max = 1, dst) {
+function clamp$2(v, min2 = 0, max2 = 1, dst) {
   dst = dst || new VecType$2(2);
-  dst[0] = Math.min(max, Math.max(min, v[0]));
-  dst[1] = Math.min(max, Math.max(min, v[1]));
+  dst[0] = Math.min(max2, Math.max(min2, v[0]));
+  dst[1] = Math.min(max2, Math.max(min2, v[1]));
   return dst;
 }
 function add$3(a, b, dst) {
@@ -480,10 +487,10 @@ function add$3(a, b, dst) {
   dst[1] = a[1] + b[1];
   return dst;
 }
-function addScaled$2(a, b, scale, dst) {
+function addScaled$2(a, b, scale2, dst) {
   dst = dst || new VecType$2(2);
-  dst[0] = a[0] + b[0] * scale;
-  dst[1] = a[1] + b[1] * scale;
+  dst[0] = a[0] + b[0] * scale2;
+  dst[1] = a[1] + b[1] * scale2;
   return dst;
 }
 function angle$2(a, b) {
@@ -593,10 +600,10 @@ function normalize$3(v, dst) {
   dst = dst || new VecType$2(2);
   const v0 = v[0];
   const v1 = v[1];
-  const len = Math.sqrt(v0 * v0 + v1 * v1);
-  if (len > 1e-5) {
-    dst[0] = v0 / len;
-    dst[1] = v1 / len;
+  const len2 = Math.sqrt(v0 * v0 + v1 * v1);
+  if (len2 > 1e-5) {
+    dst[0] = v0 / len2;
+    dst[1] = v1 / len2;
   } else {
     dst[0] = 0;
     dst[1] = 0;
@@ -630,11 +637,11 @@ function divide$2(a, b, dst) {
   return dst;
 }
 const div$2 = divide$2;
-function random$1(scale = 1, dst) {
+function random$1(scale2 = 1, dst) {
   dst = dst || new VecType$2(2);
   const angle = Math.random() * 2 * Math.PI;
-  dst[0] = Math.cos(angle) * scale;
-  dst[1] = Math.sin(angle) * scale;
+  dst[0] = Math.cos(angle) * scale2;
+  dst[1] = Math.sin(angle) * scale2;
   return dst;
 }
 function zero$2(dst) {
@@ -659,54 +666,65 @@ function transformMat3$1(v, m, dst) {
   dst[1] = m[1] * x + m[5] * y + m[9];
   return dst;
 }
+function rotate$2(a, b, rad, dst) {
+  dst = dst || new VecType$2(2);
+  const p0 = a[0] - b[0];
+  const p1 = a[1] - b[1];
+  const sinC = Math.sin(rad);
+  const cosC = Math.cos(rad);
+  dst[0] = p0 * cosC - p1 * sinC + b[0];
+  dst[1] = p0 * sinC + p1 * cosC + b[1];
+  return dst;
+}
 var vec2Impl = /* @__PURE__ */ Object.freeze({
   __proto__: null,
-  create: create$5,
-  setDefaultType: setDefaultType$6,
-  fromValues: fromValues$3,
-  set: set$5,
-  ceil: ceil$2,
-  floor: floor$2,
-  round: round$2,
-  clamp: clamp$2,
   add: add$3,
   addScaled: addScaled$2,
   angle: angle$2,
-  subtract: subtract$3,
-  sub: sub$3,
-  equalsApproximately: equalsApproximately$5,
+  ceil: ceil$2,
+  clamp: clamp$2,
+  clone: clone$5,
+  copy: copy$5,
+  create: create$5,
+  cross: cross$1,
+  dist: dist$2,
+  distSq: distSq$2,
+  distance: distance$2,
+  distanceSq: distanceSq$2,
+  div: div$2,
+  divScalar: divScalar$3,
+  divide: divide$2,
+  dot: dot$3,
   equals: equals$5,
+  equalsApproximately: equalsApproximately$5,
+  floor: floor$2,
+  fromValues: fromValues$3,
+  inverse: inverse$5,
+  invert: invert$4,
+  len: len$3,
+  lenSq: lenSq$3,
+  length: length$3,
+  lengthSq: lengthSq$3,
   lerp: lerp$3,
   lerpV: lerpV$2,
   max: max$2,
   min: min$2,
-  mulScalar: mulScalar$3,
-  scale: scale$5,
-  divScalar: divScalar$3,
-  inverse: inverse$5,
-  invert: invert$4,
-  cross: cross$1,
-  dot: dot$3,
-  length: length$3,
-  len: len$3,
-  lengthSq: lengthSq$3,
-  lenSq: lenSq$3,
-  distance: distance$2,
-  dist: dist$2,
-  distanceSq: distanceSq$2,
-  distSq: distSq$2,
-  normalize: normalize$3,
-  negate: negate$4,
-  copy: copy$5,
-  clone: clone$5,
-  multiply: multiply$5,
   mul: mul$5,
-  divide: divide$2,
-  div: div$2,
+  mulScalar: mulScalar$3,
+  multiply: multiply$5,
+  negate: negate$4,
+  normalize: normalize$3,
   random: random$1,
-  zero: zero$2,
+  rotate: rotate$2,
+  round: round$2,
+  scale: scale$5,
+  set: set$5,
+  setDefaultType: setDefaultType$6,
+  sub: sub$3,
+  subtract: subtract$3,
+  transformMat3: transformMat3$1,
   transformMat4: transformMat4$2,
-  transformMat3: transformMat3$1
+  zero: zero$2
 });
 const ctorMap = /* @__PURE__ */ new Map([
   [Float32Array, () => new Float32Array(12)],
@@ -743,11 +761,11 @@ function round$1(v, dst) {
   dst[2] = Math.round(v[2]);
   return dst;
 }
-function clamp$1(v, min = 0, max = 1, dst) {
+function clamp$1(v, min2 = 0, max2 = 1, dst) {
   dst = dst || new VecType$1(3);
-  dst[0] = Math.min(max, Math.max(min, v[0]));
-  dst[1] = Math.min(max, Math.max(min, v[1]));
-  dst[2] = Math.min(max, Math.max(min, v[2]));
+  dst[0] = Math.min(max2, Math.max(min2, v[0]));
+  dst[1] = Math.min(max2, Math.max(min2, v[1]));
+  dst[2] = Math.min(max2, Math.max(min2, v[2]));
   return dst;
 }
 function add$2(a, b, dst) {
@@ -757,11 +775,11 @@ function add$2(a, b, dst) {
   dst[2] = a[2] + b[2];
   return dst;
 }
-function addScaled$1(a, b, scale, dst) {
+function addScaled$1(a, b, scale2, dst) {
   dst = dst || new VecType$1(3);
-  dst[0] = a[0] + b[0] * scale;
-  dst[1] = a[1] + b[1] * scale;
-  dst[2] = a[2] + b[2] * scale;
+  dst[0] = a[0] + b[0] * scale2;
+  dst[1] = a[1] + b[1] * scale2;
+  dst[2] = a[2] + b[2] * scale2;
   return dst;
 }
 function angle$1(a, b) {
@@ -887,11 +905,11 @@ function normalize$2(v, dst) {
   const v0 = v[0];
   const v1 = v[1];
   const v2 = v[2];
-  const len = Math.sqrt(v0 * v0 + v1 * v1 + v2 * v2);
-  if (len > 1e-5) {
-    dst[0] = v0 / len;
-    dst[1] = v1 / len;
-    dst[2] = v2 / len;
+  const len2 = Math.sqrt(v0 * v0 + v1 * v1 + v2 * v2);
+  if (len2 > 1e-5) {
+    dst[0] = v0 / len2;
+    dst[1] = v1 / len2;
+    dst[2] = v2 / len2;
   } else {
     dst[0] = 0;
     dst[1] = 0;
@@ -930,14 +948,14 @@ function divide$1(a, b, dst) {
   return dst;
 }
 const div$1 = divide$1;
-function random(scale = 1, dst) {
+function random(scale2 = 1, dst) {
   dst = dst || new VecType$1(3);
   const angle = Math.random() * 2 * Math.PI;
   const z = Math.random() * 2 - 1;
-  const zScale = Math.sqrt(1 - z * z) * scale;
+  const zScale = Math.sqrt(1 - z * z) * scale2;
   dst[0] = Math.cos(angle) * zScale;
   dst[1] = Math.sin(angle) * zScale;
-  dst[2] = z * scale;
+  dst[2] = z * scale2;
   return dst;
 }
 function zero$1(dst) {
@@ -1026,59 +1044,107 @@ function getScaling$1(m, dst) {
   dst[2] = Math.sqrt(zx * zx + zy * zy + zz * zz);
   return dst;
 }
+function rotateX$2(a, b, rad, dst) {
+  dst = dst || new VecType$1(3);
+  const p = [];
+  const r = [];
+  p[0] = a[0] - b[0];
+  p[1] = a[1] - b[1];
+  p[2] = a[2] - b[2];
+  r[0] = p[0];
+  r[1] = p[1] * Math.cos(rad) - p[2] * Math.sin(rad);
+  r[2] = p[1] * Math.sin(rad) + p[2] * Math.cos(rad);
+  dst[0] = r[0] + b[0];
+  dst[1] = r[1] + b[1];
+  dst[2] = r[2] + b[2];
+  return dst;
+}
+function rotateY$2(a, b, rad, dst) {
+  dst = dst || new VecType$1(3);
+  const p = [];
+  const r = [];
+  p[0] = a[0] - b[0];
+  p[1] = a[1] - b[1];
+  p[2] = a[2] - b[2];
+  r[0] = p[2] * Math.sin(rad) + p[0] * Math.cos(rad);
+  r[1] = p[1];
+  r[2] = p[2] * Math.cos(rad) - p[0] * Math.sin(rad);
+  dst[0] = r[0] + b[0];
+  dst[1] = r[1] + b[1];
+  dst[2] = r[2] + b[2];
+  return dst;
+}
+function rotateZ$2(a, b, rad, dst) {
+  dst = dst || new VecType$1(3);
+  const p = [];
+  const r = [];
+  p[0] = a[0] - b[0];
+  p[1] = a[1] - b[1];
+  p[2] = a[2] - b[2];
+  r[0] = p[0] * Math.cos(rad) - p[1] * Math.sin(rad);
+  r[1] = p[0] * Math.sin(rad) + p[1] * Math.cos(rad);
+  r[2] = p[2];
+  dst[0] = r[0] + b[0];
+  dst[1] = r[1] + b[1];
+  dst[2] = r[2] + b[2];
+  return dst;
+}
 var vec3Impl = /* @__PURE__ */ Object.freeze({
   __proto__: null,
-  create: create$4,
-  setDefaultType: setDefaultType$5,
-  fromValues: fromValues$2,
-  set: set$3,
-  ceil: ceil$1,
-  floor: floor$1,
-  round: round$1,
-  clamp: clamp$1,
   add: add$2,
   addScaled: addScaled$1,
   angle: angle$1,
-  subtract: subtract$2,
-  sub: sub$2,
-  equalsApproximately: equalsApproximately$3,
+  ceil: ceil$1,
+  clamp: clamp$1,
+  clone: clone$3,
+  copy: copy$3,
+  create: create$4,
+  cross,
+  dist: dist$1,
+  distSq: distSq$1,
+  distance: distance$1,
+  distanceSq: distanceSq$1,
+  div: div$1,
+  divScalar: divScalar$2,
+  divide: divide$1,
+  dot: dot$2,
   equals: equals$3,
+  equalsApproximately: equalsApproximately$3,
+  floor: floor$1,
+  fromValues: fromValues$2,
+  getAxis: getAxis$1,
+  getScaling: getScaling$1,
+  getTranslation: getTranslation$1,
+  inverse: inverse$3,
+  invert: invert$2,
+  len: len$2,
+  lenSq: lenSq$2,
+  length: length$2,
+  lengthSq: lengthSq$2,
   lerp: lerp$2,
   lerpV: lerpV$1,
   max: max$1,
   min: min$1,
-  mulScalar: mulScalar$2,
-  scale: scale$3,
-  divScalar: divScalar$2,
-  inverse: inverse$3,
-  invert: invert$2,
-  cross,
-  dot: dot$2,
-  length: length$2,
-  len: len$2,
-  lengthSq: lengthSq$2,
-  lenSq: lenSq$2,
-  distance: distance$1,
-  dist: dist$1,
-  distanceSq: distanceSq$1,
-  distSq: distSq$1,
-  normalize: normalize$2,
-  negate: negate$2,
-  copy: copy$3,
-  clone: clone$3,
-  multiply: multiply$3,
   mul: mul$3,
-  divide: divide$1,
-  div: div$1,
+  mulScalar: mulScalar$2,
+  multiply: multiply$3,
+  negate: negate$2,
+  normalize: normalize$2,
   random,
-  zero: zero$1,
+  rotateX: rotateX$2,
+  rotateY: rotateY$2,
+  rotateZ: rotateZ$2,
+  round: round$1,
+  scale: scale$3,
+  set: set$3,
+  setDefaultType: setDefaultType$5,
+  sub: sub$2,
+  subtract: subtract$2,
+  transformMat3,
   transformMat4: transformMat4$1,
   transformMat4Upper3x3,
-  transformMat3,
   transformQuat,
-  getTranslation: getTranslation$1,
-  getAxis: getAxis$1,
-  getScaling: getScaling$1
+  zero: zero$1
 });
 let MatType = Float32Array;
 function setDefaultType$3(ctor) {
@@ -2110,52 +2176,398 @@ function uniformScale(m, s, dst) {
 }
 var mat4Impl = /* @__PURE__ */ Object.freeze({
   __proto__: null,
-  setDefaultType: setDefaultType$3,
+  aim,
+  axisRotate,
+  axisRotation,
+  cameraAim,
+  clone: clone$2,
+  copy: copy$2,
   create: create$2,
-  set: set$2,
+  determinant,
+  equals: equals$2,
+  equalsApproximately: equalsApproximately$2,
   fromMat3,
   fromQuat,
-  negate: negate$1,
-  copy: copy$2,
-  clone: clone$2,
-  equalsApproximately: equalsApproximately$2,
-  equals: equals$2,
-  identity: identity$1,
-  transpose,
-  inverse: inverse$2,
-  determinant,
-  invert: invert$1,
-  multiply: multiply$2,
-  mul: mul$2,
-  setTranslation,
-  getTranslation,
-  getAxis,
-  setAxis,
-  getScaling,
-  perspective,
-  ortho,
   frustum,
-  aim,
-  cameraAim,
+  getAxis,
+  getScaling,
+  getTranslation,
+  identity: identity$1,
+  inverse: inverse$2,
+  invert: invert$1,
   lookAt,
-  translation,
-  translate,
-  rotationX,
-  rotateX: rotateX$1,
-  rotationY,
-  rotateY: rotateY$1,
-  rotationZ,
-  rotateZ: rotateZ$1,
-  axisRotation,
-  rotation,
-  axisRotate,
+  mul: mul$2,
+  multiply: multiply$2,
+  negate: negate$1,
+  ortho,
+  perspective,
   rotate,
-  scaling,
+  rotateX: rotateX$1,
+  rotateY: rotateY$1,
+  rotateZ: rotateZ$1,
+  rotation,
+  rotationX,
+  rotationY,
+  rotationZ,
   scale: scale$2,
-  uniformScaling,
-  uniformScale
+  scaling,
+  set: set$2,
+  setAxis,
+  setDefaultType: setDefaultType$3,
+  setTranslation,
+  translate,
+  translation,
+  transpose,
+  uniformScale,
+  uniformScaling
 });
-const BUF_LEN = 11;
+let VecType = Float32Array;
+function setDefaultType$1(ctor) {
+  const oldType = VecType;
+  VecType = ctor;
+  return oldType;
+}
+function create(x, y, z, w) {
+  const dst = new VecType(4);
+  if (x !== void 0) {
+    dst[0] = x;
+    if (y !== void 0) {
+      dst[1] = y;
+      if (z !== void 0) {
+        dst[2] = z;
+        if (w !== void 0) {
+          dst[3] = w;
+        }
+      }
+    }
+  }
+  return dst;
+}
+const fromValues = create;
+function set(x, y, z, w, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = x;
+  dst[1] = y;
+  dst[2] = z;
+  dst[3] = w;
+  return dst;
+}
+function ceil(v, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = Math.ceil(v[0]);
+  dst[1] = Math.ceil(v[1]);
+  dst[2] = Math.ceil(v[2]);
+  dst[3] = Math.ceil(v[3]);
+  return dst;
+}
+function floor(v, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = Math.floor(v[0]);
+  dst[1] = Math.floor(v[1]);
+  dst[2] = Math.floor(v[2]);
+  dst[3] = Math.floor(v[3]);
+  return dst;
+}
+function round(v, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = Math.round(v[0]);
+  dst[1] = Math.round(v[1]);
+  dst[2] = Math.round(v[2]);
+  dst[3] = Math.round(v[3]);
+  return dst;
+}
+function clamp(v, min2 = 0, max2 = 1, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = Math.min(max2, Math.max(min2, v[0]));
+  dst[1] = Math.min(max2, Math.max(min2, v[1]));
+  dst[2] = Math.min(max2, Math.max(min2, v[2]));
+  dst[3] = Math.min(max2, Math.max(min2, v[3]));
+  return dst;
+}
+function add(a, b, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = a[0] + b[0];
+  dst[1] = a[1] + b[1];
+  dst[2] = a[2] + b[2];
+  dst[3] = a[3] + b[3];
+  return dst;
+}
+function addScaled(a, b, scale2, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = a[0] + b[0] * scale2;
+  dst[1] = a[1] + b[1] * scale2;
+  dst[2] = a[2] + b[2] * scale2;
+  dst[3] = a[3] + b[3] * scale2;
+  return dst;
+}
+function subtract(a, b, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = a[0] - b[0];
+  dst[1] = a[1] - b[1];
+  dst[2] = a[2] - b[2];
+  dst[3] = a[3] - b[3];
+  return dst;
+}
+const sub = subtract;
+function equalsApproximately(a, b) {
+  return Math.abs(a[0] - b[0]) < EPSILON && Math.abs(a[1] - b[1]) < EPSILON && Math.abs(a[2] - b[2]) < EPSILON && Math.abs(a[3] - b[3]) < EPSILON;
+}
+function equals(a, b) {
+  return a[0] === b[0] && a[1] === b[1] && a[2] === b[2] && a[3] === b[3];
+}
+function lerp(a, b, t, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = a[0] + t * (b[0] - a[0]);
+  dst[1] = a[1] + t * (b[1] - a[1]);
+  dst[2] = a[2] + t * (b[2] - a[2]);
+  dst[3] = a[3] + t * (b[3] - a[3]);
+  return dst;
+}
+function lerpV(a, b, t, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = a[0] + t[0] * (b[0] - a[0]);
+  dst[1] = a[1] + t[1] * (b[1] - a[1]);
+  dst[2] = a[2] + t[2] * (b[2] - a[2]);
+  dst[3] = a[3] + t[3] * (b[3] - a[3]);
+  return dst;
+}
+function max(a, b, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = Math.max(a[0], b[0]);
+  dst[1] = Math.max(a[1], b[1]);
+  dst[2] = Math.max(a[2], b[2]);
+  dst[3] = Math.max(a[3], b[3]);
+  return dst;
+}
+function min(a, b, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = Math.min(a[0], b[0]);
+  dst[1] = Math.min(a[1], b[1]);
+  dst[2] = Math.min(a[2], b[2]);
+  dst[3] = Math.min(a[3], b[3]);
+  return dst;
+}
+function mulScalar(v, k, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = v[0] * k;
+  dst[1] = v[1] * k;
+  dst[2] = v[2] * k;
+  dst[3] = v[3] * k;
+  return dst;
+}
+const scale = mulScalar;
+function divScalar(v, k, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = v[0] / k;
+  dst[1] = v[1] / k;
+  dst[2] = v[2] / k;
+  dst[3] = v[3] / k;
+  return dst;
+}
+function inverse(v, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = 1 / v[0];
+  dst[1] = 1 / v[1];
+  dst[2] = 1 / v[2];
+  dst[3] = 1 / v[3];
+  return dst;
+}
+const invert = inverse;
+function dot(a, b) {
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3];
+}
+function length(v) {
+  const v0 = v[0];
+  const v1 = v[1];
+  const v2 = v[2];
+  const v3 = v[3];
+  return Math.sqrt(v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3);
+}
+const len = length;
+function lengthSq(v) {
+  const v0 = v[0];
+  const v1 = v[1];
+  const v2 = v[2];
+  const v3 = v[3];
+  return v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3;
+}
+const lenSq = lengthSq;
+function distance(a, b) {
+  const dx = a[0] - b[0];
+  const dy = a[1] - b[1];
+  const dz = a[2] - b[2];
+  const dw = a[3] - b[3];
+  return Math.sqrt(dx * dx + dy * dy + dz * dz + dw * dw);
+}
+const dist = distance;
+function distanceSq(a, b) {
+  const dx = a[0] - b[0];
+  const dy = a[1] - b[1];
+  const dz = a[2] - b[2];
+  const dw = a[3] - b[3];
+  return dx * dx + dy * dy + dz * dz + dw * dw;
+}
+const distSq = distanceSq;
+function normalize(v, dst) {
+  dst = dst || new VecType(4);
+  const v0 = v[0];
+  const v1 = v[1];
+  const v2 = v[2];
+  const v3 = v[3];
+  const len2 = Math.sqrt(v0 * v0 + v1 * v1 + v2 * v2 + v3 * v3);
+  if (len2 > 1e-5) {
+    dst[0] = v0 / len2;
+    dst[1] = v1 / len2;
+    dst[2] = v2 / len2;
+    dst[3] = v3 / len2;
+  } else {
+    dst[0] = 0;
+    dst[1] = 0;
+    dst[2] = 0;
+    dst[3] = 0;
+  }
+  return dst;
+}
+function negate(v, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = -v[0];
+  dst[1] = -v[1];
+  dst[2] = -v[2];
+  dst[3] = -v[3];
+  return dst;
+}
+function copy(v, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = v[0];
+  dst[1] = v[1];
+  dst[2] = v[2];
+  dst[3] = v[3];
+  return dst;
+}
+const clone = copy;
+function multiply(a, b, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = a[0] * b[0];
+  dst[1] = a[1] * b[1];
+  dst[2] = a[2] * b[2];
+  dst[3] = a[3] * b[3];
+  return dst;
+}
+const mul = multiply;
+function divide(a, b, dst) {
+  dst = dst || new VecType(4);
+  dst[0] = a[0] / b[0];
+  dst[1] = a[1] / b[1];
+  dst[2] = a[2] / b[2];
+  dst[3] = a[3] / b[3];
+  return dst;
+}
+const div = divide;
+function zero(dst) {
+  dst = dst || new VecType(4);
+  dst[0] = 0;
+  dst[1] = 0;
+  dst[2] = 0;
+  dst[3] = 0;
+  return dst;
+}
+function transformMat4(v, m, dst) {
+  dst = dst || new VecType(4);
+  const x = v[0];
+  const y = v[1];
+  const z = v[2];
+  const w = v[3];
+  dst[0] = m[0] * x + m[4] * y + m[8] * z + m[12] * w;
+  dst[1] = m[1] * x + m[5] * y + m[9] * z + m[13] * w;
+  dst[2] = m[2] * x + m[6] * y + m[10] * z + m[14] * w;
+  dst[3] = m[3] * x + m[7] * y + m[11] * z + m[15] * w;
+  return dst;
+}
+var vec4Impl = /* @__PURE__ */ Object.freeze({
+  __proto__: null,
+  add,
+  addScaled,
+  ceil,
+  clamp,
+  clone,
+  copy,
+  create,
+  dist,
+  distSq,
+  distance,
+  distanceSq,
+  div,
+  divScalar,
+  divide,
+  dot,
+  equals,
+  equalsApproximately,
+  floor,
+  fromValues,
+  inverse,
+  invert,
+  len,
+  lenSq,
+  length,
+  lengthSq,
+  lerp,
+  lerpV,
+  max,
+  min,
+  mul,
+  mulScalar,
+  multiply,
+  negate,
+  normalize,
+  round,
+  scale,
+  set,
+  setDefaultType: setDefaultType$1,
+  sub,
+  subtract,
+  transformMat4,
+  zero
+});
+const BUF_LEN = 10;
+const vertexSize = 40;
+const colorOffset = 16;
+const uvOffset = 32;
+class Color {
+  // 0.0 - 1.0
+  constructor(r = 0, g = 0, b = 0, a = 1) {
+    __publicField(this, "r");
+    // 0 - 255
+    __publicField(this, "g");
+    // 0 - 255
+    __publicField(this, "b");
+    // 0 - 255
+    __publicField(this, "a");
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
+  }
+  clone() {
+    return new Color(this.r, this.g, this.b, this.a);
+  }
+  toBuffer() {
+    return [this.r / 255, this.g / 255, this.b / 255, this.a];
+  }
+  toVec4() {
+    return vector4(this.r, this.g, this.b, this.a);
+  }
+  toObject() {
+    return {
+      r: this.r / 255,
+      g: this.g / 255,
+      b: this.b / 255,
+      a: this.a
+    };
+  }
+  diff(color2) {
+    return new Color(this.r - color2.r, this.g - color2.g, this.b - color2.b, this.a - color2.a);
+  }
+}
 class VertexCache {
   constructor() {
     __publicField(this, "vertices", []);
@@ -2177,225 +2589,6 @@ class VertexCache {
   getVertexCount() {
     return this.vertices.length / BUF_LEN;
   }
-}
-class SimulationElement {
-  constructor(pos, color2 = new Color()) {
-    __publicField(this, "pos");
-    __publicField(this, "color");
-    __publicField(this, "camera");
-    __publicField(this, "vertexCache");
-    this.pos = pos;
-    vec3ToPixelRatio(this.pos);
-    this.color = color2;
-    this.vertexCache = new VertexCache();
-    this.camera = null;
-  }
-  setPos(pos) {
-    this.pos = pos;
-  }
-  getPos() {
-    return this.pos;
-  }
-  setCamera(camera) {
-    this.camera = camera;
-  }
-  fill(newColor, t = 0, f) {
-    const diffR = newColor.r - this.color.r;
-    const diffG = newColor.g - this.color.g;
-    const diffB = newColor.b - this.color.b;
-    const diffA = newColor.a - this.color.a;
-    const finalColor = newColor.clone();
-    return transitionValues((p) => {
-      this.color.r += diffR * p;
-      this.color.g += diffG * p;
-      this.color.b += diffB * p;
-      this.color.a += diffA * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.color = finalColor;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  getColor() {
-    return this.color;
-  }
-  move(amount, t = 0, f) {
-    const finalPos = vec3Impl.create();
-    vec3Impl.add(finalPos, this.pos, amount);
-    return transitionValues((p) => {
-      const x = amount[0] * p;
-      const y = amount[1] * p;
-      const z = amount[2] * p;
-      vec3Impl.add(this.pos, this.pos, vector3(x, y, z));
-      this.vertexCache.updated();
-    }, () => {
-      this.pos = finalPos;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  moveTo(pos, t = 0, f) {
-    const diff = vec3Impl.create();
-    vec3Impl.sub(diff, pos, this.pos);
-    return transitionValues((p) => {
-      const x = diff[0] * p;
-      const y = diff[1] * p;
-      const z = diff[2] * p;
-      vec3Impl.add(this.pos, this.pos, vector3(x, y, z));
-      this.vertexCache.updated();
-    }, () => {
-      this.pos = pos;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-}
-class Square extends SimulationElement {
-  /**
-   * @param vertexColors{Record<number, Color>} - 0 is top left vertex, numbers increase clockwise
-   */
-  constructor(pos, width, height, color2, rotation2, vertexColors) {
-    super(vec3fromVec2(pos), color2);
-    __publicField(this, "width");
-    __publicField(this, "height");
-    __publicField(this, "rotation");
-    __publicField(this, "vertexColors");
-    __publicField(this, "points");
-    this.width = width * devicePixelRatio;
-    this.height = height * devicePixelRatio;
-    this.rotation = rotation2 || 0;
-    this.vertexColors = vertexColors || {};
-    this.points = [
-      vector2(this.width / 2, this.height / 2),
-      vector2(-this.width / 2, this.height / 2),
-      vector2(-this.width / 2, -this.height / 2),
-      vector2(this.width / 2, -this.height / 2)
-    ];
-  }
-  scaleWidth(amount, t = 0, f) {
-    const finalWidth = this.width * amount;
-    const diffWidth = finalWidth - this.width;
-    return transitionValues((p) => {
-      this.width += diffWidth * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.width = finalWidth;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  scaleHeight(amount, t = 0, f) {
-    const finalHeight = this.height * amount;
-    const diffHeight = finalHeight - this.height;
-    return transitionValues((p) => {
-      this.height += diffHeight * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.height = finalHeight;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  scale(amount, t = 0, f) {
-    const finalWidth = this.width * amount;
-    const finalHeight = this.height * amount;
-    const diffWidth = finalWidth - this.width;
-    const diffHeight = finalHeight - this.height;
-    return transitionValues((p) => {
-      this.width += diffWidth * p;
-      this.height += diffHeight * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.width = finalWidth;
-      this.height = finalHeight;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  setWidth(num, t = 0, f) {
-    num *= devicePixelRatio;
-    const diffWidth = num - this.width;
-    return transitionValues((p) => {
-      this.width += diffWidth * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.width = num;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  setHeight(num, t = 0, f) {
-    num *= devicePixelRatio;
-    const diffHeight = num - this.height;
-    return transitionValues((p) => {
-      this.height += diffHeight * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.height = num;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  rotate(rotation2, t = 0, f) {
-    const finalRotation = this.rotation + rotation2;
-    return transitionValues((p) => {
-      this.rotation += rotation2 * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.rotation = finalRotation;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  setRotation(newRotation, t = 0, f) {
-    const diff = newRotation - this.rotation;
-    return transitionValues((p) => {
-      this.rotation += diff * p;
-      this.vertexCache.updated();
-    }, () => {
-      this.rotation = newRotation;
-      this.vertexCache.updated();
-    }, t, f);
-  }
-  getBuffer(camera, force) {
-    const resBuffer = [];
-    const vertexOrder = [0, 1, 2, 0, 2, 3];
-    if (this.vertexCache.shouldUpdate() || force) {
-      const rotationMat = mat4Impl.identity();
-      mat4Impl.rotateZ(rotationMat, this.rotation, rotationMat);
-      const points = this.points.map((vec) => {
-        vec2Impl.transformMat4(vec, rotationMat, vec);
-        const pos = vector2();
-        vec2Impl.clone(this.getPos(), pos);
-        pos[1] = camera.getScreenSize()[1] - pos[1];
-        pos[0] += this.width / 2;
-        pos[1] -= this.height / 2;
-        vec2Impl.add(vec, pos, vec);
-        return vec;
-      });
-      vertexOrder.forEach((vertex) => {
-        let vertexColor = this.vertexColors[vertex];
-        vertexColor = vertexColor ? vertexColor : this.getColor();
-        resBuffer.push(...vertexBuffer2d(vec3fromVec2(points[vertex]), vertexColor));
-      });
-      this.vertexCache.setCache(resBuffer);
-      return resBuffer;
-    }
-    return this.vertexCache.getCache();
-  }
-}
-function vertexBuffer2d(point, color2, uv = vector2()) {
-  return [...point, 1, ...color2.toBuffer(), ...uv, 0];
-}
-function vector3(x = 0, y = 0, z = 0) {
-  return vec3Impl.fromValues(x, y, z);
-}
-function vector2(x = 0, y = 0) {
-  return vec2Impl.fromValues(x, y, 0);
-}
-function vec3ToPixelRatio(vec) {
-  vec3Impl.mul(vec, vector3(devicePixelRatio, devicePixelRatio, devicePixelRatio), vec);
-}
-function vec3fromVec2(vec) {
-  return vector3(vec[0], vec[1]);
-}
-function color(r, g, b, a) {
-  return new Color(r, g, b, a);
-}
-function colorf(val, a) {
-  return color(val, val, val, a);
 }
 const buildProjectionMatrix = (aspectRatio, zNear = 1, zFar = 500) => {
   const fov = 2 * Math.PI / 5;
@@ -2421,14 +2614,20 @@ const buildDepthTexture = (device, width, height) => {
   return device.createTexture({
     size: [width, height],
     format: "depth24plus",
-    usage: GPUTextureUsage.RENDER_ATTACHMENT
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    sampleCount: 4
   });
 };
-const applyElementToScene = (scene, camera, el) => {
-  if (!camera)
-    throw logger.error("Camera is not initialized in element");
+const buildMultisampleTexture = (device, ctx, width, height) => {
+  return device.createTexture({
+    size: [width, height],
+    format: ctx.getCurrentTexture().format,
+    usage: GPUTextureUsage.RENDER_ATTACHMENT,
+    sampleCount: 4
+  });
+};
+const applyElementToScene = (scene, el) => {
   if (el instanceof SimulationElement) {
-    el.setCamera(camera);
     scene.push(el);
   } else {
     throw logger.error("Cannot add invalid SimulationElement");
@@ -2454,10 +2653,552 @@ class Logger {
   }
 }
 const logger = new Logger();
-const vertexSize = 44;
-const colorOffset = 16;
-const uvOffset = 32;
-const is3dOffset = 40;
+function transitionValues(callback1, callback2, transitionLength, func) {
+  return new Promise((resolve) => {
+    if (transitionLength == 0) {
+      callback2();
+      resolve();
+    } else {
+      let prevPercent = 0;
+      let prevTime = Date.now();
+      const step = (t, f) => {
+        const newT = f(t);
+        callback1(newT - prevPercent, t);
+        prevPercent = newT;
+        const now = Date.now();
+        let diff = now - prevTime;
+        diff = diff === 0 ? 1 : diff;
+        const fpsScale = 1 / diff;
+        const inc = 1 / (1e3 * fpsScale * transitionLength);
+        prevTime = now;
+        if (t < 1) {
+          window.requestAnimationFrame(() => step(t + inc, f));
+        } else {
+          callback2();
+          resolve();
+        }
+      };
+      step(0, func ? func : linearStep);
+    }
+  });
+}
+function linearStep(t) {
+  return t;
+}
+function vertexBuffer(x, y, z, color2, uv = vector2()) {
+  return [x, y, z, 1, ...color2.toBuffer(), ...uv];
+}
+function vector3ToPixelRatio(vec) {
+  vec[0] *= devicePixelRatio;
+  vec[1] *= devicePixelRatio;
+  vec[2] *= devicePixelRatio;
+}
+function vector2ToPixelRatio(vec) {
+  vec[0] *= devicePixelRatio;
+  vec[1] *= devicePixelRatio;
+}
+function cloneBuf(buf) {
+  return new Float32Array(buf);
+}
+function vector4(x = 0, y = 0, z = 0, w = 0) {
+  return vec4Impl.fromValues(x, y, z, w);
+}
+function vector3(x = 0, y = 0, z = 0) {
+  return vec3Impl.fromValues(x, y, z);
+}
+function vector2(x = 0, y = 0) {
+  return vec2Impl.fromValues(x, y);
+}
+function matrix4() {
+  return mat4Impl.identity();
+}
+function vector3FromVector2(vec) {
+  return vector3(vec[0], vec[1]);
+}
+function color(r, g, b, a) {
+  return new Color(r, g, b, a);
+}
+function colorf(val, a) {
+  return color(val, val, val, a);
+}
+function rotateMat4(mat, rotation2) {
+  mat4Impl.rotateZ(mat, rotation2[2], mat);
+  mat4Impl.rotateY(mat, rotation2[1], mat);
+  mat4Impl.rotateX(mat, rotation2[0], mat);
+}
+function createPipeline(device, module, presentationFormat, entryPoint, topology) {
+  return device.createRenderPipeline({
+    layout: "auto",
+    vertex: {
+      module,
+      entryPoint,
+      buffers: [
+        {
+          arrayStride: vertexSize,
+          attributes: [
+            {
+              // position
+              shaderLocation: 0,
+              offset: 0,
+              format: "float32x4"
+            },
+            {
+              // color
+              shaderLocation: 1,
+              offset: colorOffset,
+              format: "float32x4"
+            },
+            {
+              // size
+              shaderLocation: 2,
+              offset: uvOffset,
+              format: "float32x2"
+            }
+          ]
+        }
+      ]
+    },
+    fragment: {
+      module,
+      entryPoint: "fragment_main",
+      targets: [
+        {
+          format: presentationFormat
+        }
+      ]
+    },
+    primitive: {
+      topology
+    },
+    multisample: {
+      count: 4
+    },
+    depthStencil: {
+      depthWriteEnabled: true,
+      depthCompare: "less",
+      format: "depth24plus"
+    }
+  });
+}
+class Geometry {
+  constructor(vertices = [], geometryType = "list") {
+    __publicField(this, "vertices");
+    __publicField(this, "matrix");
+    __publicField(this, "geometryType");
+    this.vertices = vertices;
+    this.matrix = matrix4();
+    this.geometryType = geometryType;
+  }
+  updateMatrix(matrix) {
+    this.matrix = matrix;
+  }
+  getType() {
+    return this.geometryType;
+  }
+  getTriangleVertexCount() {
+    return this.triangleOrder.length;
+  }
+  getWireframeVertexCount() {
+    return this.wireframeOrder.length;
+  }
+  bufferFromOrder(order, color2) {
+    return order.map((vertexIndex) => {
+      const pos = cloneBuf(this.vertices[vertexIndex]);
+      vec3Impl.transformMat4(pos, this.matrix, pos);
+      return vertexBuffer(pos[0], pos[1], pos[2], color2);
+    }).flat();
+  }
+  getWireframeBuffer(color2) {
+    return this.bufferFromOrder(this.wireframeOrder, color2);
+  }
+  getTriangleBuffer(color2) {
+    return this.bufferFromOrder(this.triangleOrder, color2);
+  }
+}
+class SquareGeometry extends Geometry {
+  constructor(width, height) {
+    super([], "strip");
+    __publicField(this, "wireframeOrder", [0, 1, 2, 3, 0, 2]);
+    __publicField(this, "triangleOrder", [0, 1, 3, 2]);
+    __publicField(this, "params");
+    this.params = {
+      width,
+      height,
+      colorMap: {}
+    };
+    this.recompute();
+  }
+  setVertexColorMap(colorMap) {
+    this.params.colorMap = colorMap;
+  }
+  setWidth(width) {
+    this.params.width = width;
+  }
+  setHeight(height) {
+    this.params.height = height;
+  }
+  recompute() {
+    this.vertices = [
+      vector3(-this.params.width / 2, this.params.height / 2, 0),
+      vector3(this.params.width / 2, this.params.height / 2, 0),
+      vector3(this.params.width / 2, -this.params.height / 2, 0),
+      vector3(-this.params.width / 2, -this.params.height / 2, 0)
+    ];
+  }
+  getTriangleBuffer(color2) {
+    return this.triangleOrder.map((vertexIndex) => {
+      const pos = cloneBuf(this.vertices[vertexIndex]);
+      vec3Impl.transformMat4(pos, this.matrix, pos);
+      return vertexBuffer(pos[0], pos[1], pos[2], this.params.colorMap[vertexIndex] || color2);
+    }).flat();
+  }
+}
+class BlankGeometry extends Geometry {
+  constructor() {
+    super();
+    __publicField(this, "wireframeOrder", []);
+    __publicField(this, "triangleOrder", []);
+    __publicField(this, "params", {});
+  }
+  recompute() {
+  }
+}
+class SimulationElement {
+  /**
+   * @param pos - Expected to be adjusted to devicePixelRatio before reaching constructor
+   */
+  constructor(color2 = new Color(), rotation2, is3d = true) {
+    __publicField(this, "color");
+    __publicField(this, "wireframe");
+    __publicField(this, "vertexCache");
+    __publicField(this, "rotation");
+    __publicField(this, "is3d");
+    this.color = color2;
+    this.vertexCache = new VertexCache();
+    this.is3d = is3d;
+    this.wireframe = false;
+    this.rotation = rotation2;
+  }
+  getGeometryType() {
+    return this.geometry.getType();
+  }
+  setWireframe(wireframe) {
+    this.wireframe = wireframe;
+  }
+  isWireframe() {
+    return this.wireframe;
+  }
+  getColor() {
+    return this.color;
+  }
+  getPos() {
+    return this.pos;
+  }
+  fill(newColor, t = 0, f) {
+    const diff = newColor.diff(this.color);
+    const finalColor = newColor.clone();
+    return transitionValues((p) => {
+      this.color.r += diff.r * p;
+      this.color.g += diff.g * p;
+      this.color.b += diff.b * p;
+      this.color.a += diff.a * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.color = finalColor;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  getVertexCount() {
+    if (this.isWireframe()) {
+      return this.geometry.getWireframeVertexCount();
+    }
+    return this.geometry.getTriangleVertexCount();
+  }
+  defaultUpdateMatrix(camera) {
+    const matrix = matrix4();
+    if (typeof this.rotation === "number") {
+      const pos = vector3FromVector2(this.pos);
+      pos[1] = camera.getScreenSize()[1] - pos[1];
+      mat4Impl.translate(matrix, pos, matrix);
+      mat4Impl.rotateZ(matrix, this.rotation, matrix);
+    } else {
+      mat4Impl.translate(matrix, this.pos, matrix);
+      rotateMat4(matrix, this.rotation);
+    }
+    this.geometry.updateMatrix(matrix);
+  }
+  getBuffer(camera) {
+    if (this.vertexCache.shouldUpdate() || camera.hasUpdated()) {
+      this.updateMatrix(camera);
+      this.geometry.recompute();
+      let resBuffer = [];
+      if (this.isWireframe()) {
+        resBuffer = this.geometry.getWireframeBuffer(this.color);
+      } else {
+        resBuffer = this.geometry.getTriangleBuffer(this.color);
+      }
+      this.vertexCache.setCache(resBuffer);
+      return resBuffer;
+    }
+    return this.vertexCache.getCache();
+  }
+}
+class SimulationElement3d extends SimulationElement {
+  constructor(pos, rotation2 = vector3(), color2) {
+    super(color2, rotation2);
+    __publicField(this, "pos");
+    __publicField(this, "rotation");
+    this.pos = pos;
+    vector3ToPixelRatio(this.pos);
+    this.rotation = rotation2;
+  }
+  rotate(amount, t = 0, f) {
+    const finalRotation = cloneBuf(this.rotation);
+    vec3Impl.add(finalRotation, amount, finalRotation);
+    return transitionValues((p) => {
+      this.rotation[0] += amount[0] * p;
+      this.rotation[1] += amount[1] * p;
+      this.rotation[2] += amount[2] * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.rotation = finalRotation;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  rotateTo(rot, t = 0, f) {
+    const diff = vector3();
+    vec3Impl.sub(rot, this.rotation, diff);
+    return transitionValues((p) => {
+      this.rotation[0] += diff[0] * p;
+      this.rotation[1] += diff[1] * p;
+      this.rotation[2] += diff[2] * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.rotation = rot;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  move(amount, t = 0, f) {
+    const finalPos = cloneBuf(this.pos);
+    vec3Impl.add(finalPos, amount, finalPos);
+    return transitionValues((p) => {
+      this.pos[0] += amount[0] * p;
+      this.pos[1] += amount[1] * p;
+      this.pos[2] += amount[2] * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.pos = finalPos;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  moveTo(pos, t = 0, f) {
+    const diff = vector3();
+    vec3Impl.sub(pos, this.pos, diff);
+    return transitionValues((p) => {
+      this.pos[0] += diff[0] * p;
+      this.pos[1] += diff[1] * p;
+      this.pos[2] += diff[2] * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.pos = pos;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+}
+class SimulationElement2d extends SimulationElement {
+  constructor(pos, rotation2 = 0, color2) {
+    super(color2, rotation2, false);
+    __publicField(this, "pos");
+    __publicField(this, "rotation");
+    this.pos = pos;
+    this.rotation = rotation2;
+  }
+  rotate(rotation2, t = 0, f) {
+    const finalRotation = this.rotation + rotation2;
+    return transitionValues((p) => {
+      this.rotation += rotation2 * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.rotation = finalRotation;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  rotateTo(newRotation, t = 0, f) {
+    const diff = newRotation - this.rotation;
+    return transitionValues((p) => {
+      this.rotation += diff * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.rotation = newRotation;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  move(amount, t = 0, f) {
+    const finalPos = vector2();
+    vec3Impl.add(amount, this.pos, finalPos);
+    return transitionValues((p) => {
+      this.pos[0] += amount[0] * p;
+      this.pos[1] += amount[1] * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.pos = finalPos;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  moveTo(pos, t = 0, f) {
+    const diff = vector2();
+    vec2Impl.sub(pos, this.pos, diff);
+    return transitionValues((p) => {
+      this.pos[0] += diff[0] * p;
+      this.pos[1] += diff[1] * p;
+      this.vertexCache.updated();
+    }, () => {
+      this.pos = pos;
+      this.vertexCache.updated();
+    }, t, f);
+  }
+}
+class Square extends SimulationElement2d {
+  /**
+   * @param vertexColors{Record<number, Color>} - 0 is top left vertex, numbers increase clockwise
+   */
+  constructor(pos, width, height, color2, rotation2, vertexColors) {
+    super(pos, rotation2, color2);
+    __publicField(this, "geometry");
+    __publicField(this, "width");
+    __publicField(this, "height");
+    __publicField(this, "vertexColors");
+    vector2ToPixelRatio(this.pos);
+    this.width = width * devicePixelRatio;
+    this.height = height * devicePixelRatio;
+    this.vertexColors = this.cloneColorMap(vertexColors || {});
+    this.geometry = new SquareGeometry(this.width, this.height);
+    this.geometry.setVertexColorMap(this.vertexColors);
+  }
+  cloneColorMap(colorMap) {
+    const newColorMap = {};
+    Object.entries(colorMap).forEach(([key, value]) => {
+      newColorMap[+key] = value.clone();
+    });
+    return newColorMap;
+  }
+  setVertexColors(newColorMap, t = 0, f) {
+    const colorMap = this.cloneColorMap(newColorMap);
+    const diffMap = {};
+    Object.entries(colorMap).forEach(([key, value]) => {
+      if (!this.vertexColors[+key]) {
+        this.vertexColors[+key] = color();
+      }
+      diffMap[+key] = value.diff(this.vertexColors[+key] || color());
+    });
+    Object.entries(this.vertexColors).forEach(([key, value]) => {
+      if (!diffMap[+key]) {
+        const clone2 = value.clone();
+        clone2.r *= -1;
+        clone2.g *= -1;
+        clone2.b *= -1;
+        diffMap[+key] = clone2;
+      }
+    });
+    return transitionValues((p) => {
+      Object.entries(diffMap).forEach(([key, value]) => {
+        const color2 = this.vertexColors[+key];
+        color2.r += value.r * p;
+        color2.g += value.g * p;
+        color2.b += value.b * p;
+        color2.a += value.a * p;
+        this.vertexColors[+key] = color2;
+      });
+      this.geometry.setVertexColorMap(this.vertexColors);
+      this.vertexCache.updated();
+    }, () => {
+      this.vertexColors = colorMap;
+      this.geometry.setVertexColorMap(this.vertexColors);
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  scaleWidth(amount, t = 0, f) {
+    const finalWidth = this.width * amount;
+    const diffWidth = finalWidth - this.width;
+    return transitionValues((p) => {
+      this.width += diffWidth * p;
+      this.geometry.setWidth(this.width);
+      this.vertexCache.updated();
+    }, () => {
+      this.width = finalWidth;
+      this.geometry.setWidth(this.width);
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  scaleHeight(amount, t = 0, f) {
+    const finalHeight = this.height * amount;
+    const diffHeight = finalHeight - this.height;
+    return transitionValues((p) => {
+      this.height += diffHeight * p;
+      this.geometry.setHeight(this.height);
+      this.vertexCache.updated();
+    }, () => {
+      this.height = finalHeight;
+      this.geometry.setHeight(this.height);
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  scale(amount, t = 0, f) {
+    const finalWidth = this.width * amount;
+    const finalHeight = this.height * amount;
+    const diffWidth = finalWidth - this.width;
+    const diffHeight = finalHeight - this.height;
+    return transitionValues((p) => {
+      this.width += diffWidth * p;
+      this.height += diffHeight * p;
+      this.geometry.setWidth(this.width);
+      this.geometry.setHeight(this.height);
+      this.vertexCache.updated();
+    }, () => {
+      this.width = finalWidth;
+      this.height = finalHeight;
+      this.geometry.setWidth(this.width);
+      this.geometry.setHeight(this.height);
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  setWidth(num, t = 0, f) {
+    num *= devicePixelRatio;
+    const diffWidth = num - this.width;
+    return transitionValues((p) => {
+      this.width += diffWidth * p;
+      this.geometry.setWidth(this.width);
+      this.vertexCache.updated();
+    }, () => {
+      this.width = num;
+      this.geometry.setWidth(this.width);
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  setHeight(num, t = 0, f) {
+    num *= devicePixelRatio;
+    const diffHeight = num - this.height;
+    return transitionValues((p) => {
+      this.height += diffHeight * p;
+      this.geometry.setHeight(this.height);
+      this.vertexCache.updated();
+    }, () => {
+      this.height = num;
+      this.geometry.setHeight(this.height);
+      this.vertexCache.updated();
+    }, t, f);
+  }
+  updateMatrix(camera) {
+    const pos = cloneBuf(this.pos);
+    pos[1] = camera.getScreenSize()[1] - pos[1];
+    pos[0] += this.width / 2;
+    pos[1] -= this.height / 2;
+    const matrix = matrix4();
+    mat4Impl.translate(matrix, vector3FromVector2(pos), matrix);
+    mat4Impl.rotateZ(matrix, this.rotation, matrix);
+    this.geometry.updateMatrix(matrix);
+  }
+}
 const shader = `
 struct Uniforms {
   modelViewProjectionMatrix : mat4x4<f32>,
@@ -2475,19 +3216,29 @@ struct VertexOutput {
 }
 
 @vertex
-fn vertex_main(
+fn vertex_main_3d(
   @location(0) position : vec4<f32>,
   @location(1) color : vec4<f32>,
   @location(2) uv : vec2<f32>,
-  @location(3) is3d : f32
 ) -> VertexOutput {
   var output : VertexOutput;
 
-  if is3d == 1 {
-    output.Position = uniforms.modelViewProjectionMatrix * position;
-  } else {
-    output.Position = uniforms.orthoProjectionMatrix * position;
-  }
+  output.Position = uniforms.modelViewProjectionMatrix * position;
+  output.fragUV = uv;
+  output.fragPosition = position;
+  output.fragColor = color;
+  return output;
+}
+
+@vertex
+fn vertex_main_2d(
+  @location(0) position : vec4<f32>,
+  @location(1) color : vec4<f32>,
+  @location(2) uv : vec2<f32>,
+) -> VertexOutput {
+  var output : VertexOutput;
+
+  output.Position = uniforms.orthoProjectionMatrix * position;
   output.fragUV = uv;
   output.fragPosition = position;
   output.fragColor = color;
@@ -2551,6 +3302,7 @@ class Simulation {
     __publicField(this, "running", true);
     __publicField(this, "frameRateView");
     __publicField(this, "camera");
+    __publicField(this, "pipelines");
     if (typeof idOrCanvasRef === "string") {
       const ref = document.getElementById(idOrCanvasRef);
       if (ref !== null)
@@ -2576,11 +3328,12 @@ class Simulation {
         this.setCanvasSize(width, height);
       }
     });
+    this.pipelines = null;
     this.frameRateView = new FrameRateView(showFrameRate);
     this.frameRateView.updateFrameRate(1);
   }
   add(el) {
-    applyElementToScene(this.scene, this.camera, el);
+    applyElementToScene(this.scene, el);
   }
   setCanvasSize(width, height) {
     this.assertHasCanvas();
@@ -2627,68 +3380,21 @@ class Simulation {
       format: presentationFormat,
       alphaMode: "premultiplied"
     });
-    const pipeline = device.createRenderPipeline({
-      layout: "auto",
-      vertex: {
-        module: shaderModule,
-        entryPoint: "vertex_main",
-        buffers: [
-          {
-            arrayStride: vertexSize,
-            attributes: [
-              {
-                // position
-                shaderLocation: 0,
-                offset: 0,
-                format: "float32x4"
-              },
-              {
-                // color
-                shaderLocation: 1,
-                offset: colorOffset,
-                format: "float32x4"
-              },
-              {
-                // size
-                shaderLocation: 2,
-                offset: uvOffset,
-                format: "float32x2"
-              },
-              {
-                // is3d
-                shaderLocation: 3,
-                offset: is3dOffset,
-                format: "float32"
-              }
-            ]
-          }
-        ]
-      },
-      fragment: {
-        module: shaderModule,
-        entryPoint: "fragment_main",
-        targets: [
-          {
-            format: presentationFormat
-          }
-        ]
-      },
-      primitive: {
-        topology: "triangle-list"
-      },
-      depthStencil: {
-        depthWriteEnabled: true,
-        depthCompare: "less",
-        format: "depth24plus"
-      }
-    });
+    this.pipelines = {
+      triangleList2d: createPipeline(device, shaderModule, presentationFormat, "vertex_main_2d", "triangle-list"),
+      triangleStrip2d: createPipeline(device, shaderModule, presentationFormat, "vertex_main_2d", "triangle-strip"),
+      lineStrip2d: createPipeline(device, shaderModule, presentationFormat, "vertex_main_2d", "line-strip"),
+      triangleList3d: createPipeline(device, shaderModule, presentationFormat, "vertex_main_3d", "triangle-list"),
+      triangleStrip3d: createPipeline(device, shaderModule, presentationFormat, "vertex_main_3d", "triangle-strip"),
+      lineStrip3d: createPipeline(device, shaderModule, presentationFormat, "vertex_main_3d", "line-strip")
+    };
     const uniformBufferSize = 4 * 16 + 4 * 16 + 4 * 2 + 8;
     const uniformBuffer = device.createBuffer({
       size: uniformBufferSize,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
     const uniformBindGroup = device.createBindGroup({
-      layout: pipeline.getBindGroupLayout(0),
+      layout: this.pipelines.triangleList3d.getBindGroupLayout(0),
       entries: [
         {
           binding: 0,
@@ -2701,6 +3407,7 @@ class Simulation {
     const colorAttachment = {
       // @ts-ignore
       view: void 0,
+      // Assigned later
       clearValue: this.bgColor.toObject(),
       loadOp: "clear",
       storeOp: "store"
@@ -2717,6 +3424,7 @@ class Simulation {
       orthoMatrix = getOrthoMatrix(this.camera.getScreenSize());
     };
     updateOrthoMatrix();
+    let multisampleTexture = buildMultisampleTexture(device, ctx, canvas.width, canvas.height);
     let depthTexture = buildDepthTexture(device, canvas.width, canvas.height);
     const renderPassDescriptor = {
       colorAttachments: [colorAttachment],
@@ -2751,10 +3459,12 @@ class Simulation {
         aspect = this.camera.getAspectRatio();
         projectionMatrix = buildProjectionMatrix(aspect);
         updateModelViewProjectionMatrix();
+        multisampleTexture = buildMultisampleTexture(device, ctx, screenSize[0], screenSize[1]);
         depthTexture = buildDepthTexture(device, screenSize[0], screenSize[1]);
         renderPassDescriptor.depthStencilAttachment.view = depthTexture.createView();
       }
-      renderPassDescriptor.colorAttachments[0].view = ctx.getCurrentTexture().createView();
+      renderPassDescriptor.colorAttachments[0].view = multisampleTexture.createView();
+      renderPassDescriptor.colorAttachments[0].resolveTarget = ctx.getCurrentTexture().createView();
       if (this.camera.hasUpdated()) {
         updateOrthoMatrix();
         updateModelViewProjectionMatrix();
@@ -2776,31 +3486,70 @@ class Simulation {
         screenSize.byteOffset,
         screenSize.byteLength
       );
-      let vertexArray = [];
-      for (let i = 0; i < this.scene.length; i++) {
-        const buffer = this.scene[i].getBuffer(this.camera, this.camera.hasUpdated());
-        vertexArray = vertexArray.concat(buffer);
-      }
-      this.camera.updateConsumed();
-      const vertexF32Array = new Float32Array(vertexArray);
-      const vertexBuffer = device.createBuffer({
-        size: vertexF32Array.byteLength,
-        usage: GPUBufferUsage.VERTEX,
-        mappedAtCreation: true
-      });
-      new Float32Array(vertexBuffer.getMappedRange()).set(vertexF32Array);
-      vertexBuffer.unmap();
-      const vertexCount = vertexF32Array.length / BUF_LEN;
       const commandEncoder = device.createCommandEncoder();
       const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
-      passEncoder.setPipeline(pipeline);
+      passEncoder.setPipeline(this.pipelines.triangleList3d);
       passEncoder.setBindGroup(0, uniformBindGroup);
-      passEncoder.setVertexBuffer(0, vertexBuffer);
-      passEncoder.draw(vertexCount);
+      this.renderScene(device, passEncoder, this.scene);
+      this.camera.updateConsumed();
       passEncoder.end();
       device.queue.submit([commandEncoder.finish()]);
     };
     requestAnimationFrame(frame);
+  }
+  getVertexCount(scene) {
+    let total = 0;
+    for (let i = 0; i < scene.length; i++) {
+      if (scene[i] instanceof SceneCollection)
+        continue;
+      total += scene[i].getVertexCount();
+    }
+    return total;
+  }
+  async renderScene(device, passEncoder, scene) {
+    if (this.pipelines === null)
+      return;
+    let totalVertices = this.getVertexCount(scene);
+    const vertexBuffer2 = device.createBuffer({
+      size: totalVertices * 40,
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+    });
+    let currentOffset = 0;
+    for (let i = 0; i < scene.length; i++) {
+      if (scene[i] instanceof SceneCollection) {
+        this.renderScene(device, passEncoder, scene[i].getScene());
+        continue;
+      }
+      const buffer = new Float32Array(scene[i].getBuffer(this.camera));
+      const vertexCount = buffer.length / BUF_LEN;
+      device.queue.writeBuffer(vertexBuffer2, currentOffset, buffer);
+      vertexBuffer2.unmap();
+      if (scene[i].isWireframe()) {
+        if (scene[i].is3d) {
+          passEncoder.setPipeline(this.pipelines.lineStrip3d);
+        } else {
+          passEncoder.setPipeline(this.pipelines.lineStrip2d);
+        }
+      } else {
+        const type = scene[i].getGeometryType();
+        if (type === "strip") {
+          if (scene[i].is3d) {
+            passEncoder.setPipeline(this.pipelines.triangleStrip3d);
+          } else {
+            passEncoder.setPipeline(this.pipelines.triangleStrip2d);
+          }
+        } else if (type === "list") {
+          if (scene[i].is3d) {
+            passEncoder.setPipeline(this.pipelines.triangleList3d);
+          } else {
+            passEncoder.setPipeline(this.pipelines.triangleList2d);
+          }
+        }
+      }
+      passEncoder.setVertexBuffer(0, vertexBuffer2, currentOffset, buffer.byteLength);
+      passEncoder.draw(vertexCount);
+      currentOffset += buffer.byteLength;
+    }
   }
   fitElement() {
     this.assertHasCanvas();
@@ -2818,27 +3567,43 @@ class Simulation {
     }
   }
 }
-class SceneCollection extends SimulationElement {
+class SceneCollection extends SimulationElement3d {
   constructor(name) {
     super(vector3());
+    __publicField(this, "geometry");
     __publicField(this, "name");
     __publicField(this, "scene");
+    this.wireframe = false;
     this.name = name;
     this.scene = [];
+    this.geometry = new BlankGeometry();
+  }
+  setWireframe(_) {
   }
   getName() {
     return this.name;
   }
+  getScene() {
+    return this.scene;
+  }
   add(el) {
-    applyElementToScene(this.scene, this.camera, el);
+    applyElementToScene(this.scene, el);
   }
   empty() {
     this.scene = [];
   }
-  getBuffer(camera, force) {
-    const res = [];
-    this.scene.forEach((item) => res.push(...item.getBuffer(camera, force)));
-    return res;
+  getSceneBuffer(camera) {
+    return this.scene.map((item) => item.getBuffer(camera)).flat();
+  }
+  getWireframe(camera) {
+    return this.getSceneBuffer(camera);
+  }
+  getTriangles(camera) {
+    console.log("here");
+    return this.getSceneBuffer(camera);
+  }
+  updateMatrix(camera) {
+    this.defaultUpdateMatrix(camera);
   }
 }
 class Camera {
@@ -2928,78 +3693,18 @@ class Camera {
     return this.aspectRatio;
   }
 }
-class Color {
-  // 0.0 - 1.0
-  constructor(r = 0, g = 0, b = 0, a = 1) {
-    __publicField(this, "r");
-    // 0 - 255
-    __publicField(this, "g");
-    // 0 - 255
-    __publicField(this, "b");
-    // 0 - 255
-    __publicField(this, "a");
-    this.r = r;
-    this.g = g;
-    this.b = b;
-    this.a = a;
-  }
-  clone() {
-    return new Color(this.r, this.g, this.b, this.a);
-  }
-  toBuffer() {
-    return [this.r / 255, this.g / 255, this.b / 255, this.a];
-  }
-  toObject() {
-    return {
-      r: this.r / 255,
-      g: this.g / 255,
-      b: this.b / 255,
-      a: this.a
-    };
-  }
-}
-function transitionValues(callback1, callback2, transitionLength, func) {
-  return new Promise((resolve) => {
-    if (transitionLength == 0) {
-      callback2();
-      resolve();
-    } else {
-      let prevPercent = 0;
-      let prevTime = Date.now();
-      const step = (t, f) => {
-        const newT = f(t);
-        callback1(newT - prevPercent, t);
-        prevPercent = newT;
-        const now = Date.now();
-        let diff = now - prevTime;
-        diff = diff === 0 ? 1 : diff;
-        const fpsScale = 1 / diff;
-        const inc = 1 / (1e3 * fpsScale * transitionLength);
-        prevTime = now;
-        if (t < 1) {
-          window.requestAnimationFrame(() => step(t + inc, f));
-        } else {
-          callback2();
-          resolve();
-        }
-      };
-      step(0, func ? func : linearStep);
-    }
-  });
-}
-function linearStep(n) {
-  return n;
-}
-var _tmpl$$2 = /* @__PURE__ */ template(`<label class=switch><input type=checkbox><div>`);
-const Switch = () => {
+var _tmpl$$2 = /* @__PURE__ */ template(`<div class=switch-wrapper><label class=switch><input type=checkbox><span></span></label><span class=label>`);
+const Switch = (props) => {
   const [active, setActive] = createSignal(false);
   const handleClick = () => {
     setActive((prev) => !prev);
+    props.onChange(active());
   };
   return (() => {
-    var _el$ = _tmpl$$2(), _el$2 = _el$.firstChild, _el$3 = _el$2.nextSibling;
-    _el$.$$click = handleClick;
-    createEffectJsx(() => className(_el$3, `slider ${active() ? "active" : ""}`));
+    var _el$ = _tmpl$$2(), _el$2 = _el$.firstChild, _el$3 = _el$2.firstChild, _el$4 = _el$3.nextSibling, _el$5 = _el$2.nextSibling;
+    _el$3.$$click = handleClick;
+    insert(_el$5, () => props.children);
+    createEffectJsx(() => className(_el$4, `slider ${active() ? "active" : "inactive"}`));
     return _el$;
   })();
 };
@@ -3096,7 +3801,7 @@ const generateMaze = (rows, cols) => {
   }
   addStartEnd(maze);
   steps.push([0, 1]);
-  steps.push([maze[0].length - 1, maze.length - 2]);
+  steps.push([maze.length - 1, maze[0].length - 2]);
   return [maze, steps];
 };
 var _tmpl$$1 = /* @__PURE__ */ template(`<div class=maze><div class=controls><button>Generate</button></div><canvas id=canvas>`);
@@ -3108,12 +3813,16 @@ const Maze = (props) => {
   let currentState = 0;
   const drawMaze = (maze) => {
     squareCollection.empty();
+    const fill = squareCollection.getScene().length === 0;
     for (let i = 0; i < maze.length; i++) {
       for (let j = 0; j < maze[i].length; j++) {
-        if (maze[i][j] > 0)
-          continue;
-        const square = new Square(vector2(j * props.squareSize, i * props.squareSize), props.squareSize, props.squareSize, colorf(0));
-        squareCollection.add(square);
+        if (fill) {
+          const square = new Square(vector2(j * props.squareSize, i * props.squareSize), props.squareSize, props.squareSize, maze[i][j] === 1 ? colorf(255) : colorf(0));
+          squareCollection.add(square);
+        } else {
+          const index = i * maze[0].length + j;
+          squareCollection.getScene()[index].fill(maze[i][j] === 1 ? colorf(255) : colorf(0));
+        }
       }
     }
   };
@@ -3121,8 +3830,8 @@ const Maze = (props) => {
     const emptyMaze = initMaze(props.height, props.width);
     for (let i = 0; i < steps.length; i++) {
       emptyMaze[steps[i][0]][steps[i][1]] = 1;
-      const clone = cloneMaze(emptyMaze);
-      mazeStates.push(clone);
+      const clone2 = cloneMaze(emptyMaze);
+      mazeStates.push(clone2);
     }
     currentState = mazeStates.length - 1;
   };
@@ -3147,23 +3856,29 @@ const Maze = (props) => {
     timeoutIds = newTimeoutIds;
   };
   onMount(() => {
-    const canvas = new Simulation("canvas");
+    const canvas = new Simulation("canvas", new Camera(vector3()), true);
     canvas.fitElement();
     canvas.start();
     canvas.add(squareCollection);
     generate();
     document.addEventListener("keydown", (e) => {
       if (e.key === "ArrowLeft")
-        Math.max(currentState--, 0);
+        currentState = Math.max(currentState - 1, 0);
       else if (e.key === "ArrowRight")
-        Math.min(currentState++, mazeStates.length - 1);
+        currentState = Math.min(currentState + 1, mazeStates.length - 1);
       drawMaze(mazeStates[currentState]);
     });
   });
+  const handleAnimateChange = (active) => {
+    setAnimate(active);
+  };
   return (() => {
     var _el$ = _tmpl$$1(), _el$2 = _el$.firstChild, _el$3 = _el$2.firstChild;
     _el$3.$$click = generate;
-    insert(_el$2, createComponent(Switch, {}), null);
+    insert(_el$2, createComponent(Switch, {
+      onChange: handleAnimateChange,
+      children: "Animate"
+    }), null);
     createEffectJsx((_p$) => {
       var _v$ = `${props.height * props.squareSize}px`, _v$2 = `${props.width * props.squareSize}px`;
       _v$ !== _p$.e && ((_p$.e = _v$) != null ? _el$.style.setProperty("height", _v$) : _el$.style.removeProperty("height"));

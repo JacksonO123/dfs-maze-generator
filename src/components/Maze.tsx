@@ -6,7 +6,9 @@ import {
   colorf,
   Camera,
   vector3,
-  color,
+  Instance,
+  matrix4,
+  mat4,
 } from "simulationjsv2";
 import Switch from "./Switch";
 import { createSignal, onMount } from "@jacksonotto/pulse";
@@ -28,30 +30,53 @@ const Maze = (props: MazeProps) => {
   let mazeStates: number[][][] = [];
   let currentState = 0;
 
-  const drawMaze = (maze: number[][]) => {
-    squareCollection.empty();
+  const square = new Square(
+    vector2(),
+    props.squareSize,
+    props.squareSize,
+    colorf(0),
+  );
 
-    const fill = squareCollection.getScene().length === 0;
+  const squareInstance = new Instance(square, 0);
+  squareCollection.add(squareInstance);
+
+  const countOccurances = (maze: number[][], value: number) => {
+    let total = 0;
 
     for (let i = 0; i < maze.length; i++) {
       for (let j = 0; j < maze[i].length; j++) {
-        if (fill) {
-          const square = new Square(
-            vector2(j * props.squareSize, i * props.squareSize),
-            props.squareSize,
-            props.squareSize,
-            maze[i][j] === 1 ? colorf(255) : colorf(0),
-          );
-
-          squareCollection.add(square);
-        } else {
-          const index = i * maze[0].length + j;
-          squareCollection
-            .getScene()
-            [index].fill(maze[i][j] === 1 ? colorf(255) : colorf(0));
-        }
+        if (maze[i][j] === value) total++;
       }
     }
+
+    return total;
+  };
+
+  const drawMaze = (maze: number[][]) => {
+    const squareOccurances = countOccurances(maze, 0);
+
+    squareInstance.setNumInstances(squareOccurances);
+    const instances = squareInstance.getInstances();
+
+    let squareCount = 1;
+
+    for (let i = 0; i < maze.length; i++) {
+      for (let j = 0; j < maze[i].length; j++) {
+        if (maze[i][j] === 1) continue;
+
+        const mat = matrix4();
+        const pos = vector3(
+          j * props.squareSize * devicePixelRatio,
+          -i * props.squareSize * devicePixelRatio,
+        );
+        mat4.translate(mat, pos, mat);
+
+        instances[squareCount] = mat;
+        squareCount++;
+      }
+    }
+
+    squareInstance.setInstance(0, matrix4());
   };
 
   const setMazeStates = (steps: [number, number][]) => {
@@ -95,7 +120,9 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
-    const canvas = new Simulation("canvas", new Camera(vector3()), true);
+    // const showFps = false;
+    const showFps = true;
+    const canvas = new Simulation("canvas", new Camera(vector3()), showFps);
     canvas.fitElement();
     canvas.start();
 
@@ -104,11 +131,13 @@ const Maze = (props: MazeProps) => {
     generate();
 
     document.addEventListener("keydown", (e) => {
-      if (e.key === "ArrowLeft") currentState = Math.max(currentState - 1, 0);
-      else if (e.key === "ArrowRight")
+      if (e.key === "ArrowLeft") {
+        currentState = Math.max(currentState - 1, 0);
+        drawMaze(mazeStates[currentState]);
+      } else if (e.key === "ArrowRight") {
         currentState = Math.min(currentState + 1, mazeStates.length - 1);
-
-      drawMaze(mazeStates[currentState]);
+        drawMaze(mazeStates[currentState]);
+      }
     });
   });
 
