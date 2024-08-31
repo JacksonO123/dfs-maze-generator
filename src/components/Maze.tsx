@@ -9,7 +9,6 @@ import {
   matrix4,
   mat4,
   EmptyElement,
-  color,
 } from "simulationjsv2";
 import Switch from "./Switch";
 import { createSignal, onMount } from "@jacksonotto/pulse";
@@ -117,8 +116,8 @@ const Maze = (props: MazeProps) => {
   };
 
   onMount(() => {
-    // const showFps = false;
-    const showFps = true;
+    const showFps = false;
+    // const showFps = true;
     const canvas = new Simulation("canvas", new Camera(vector3()), showFps);
     canvas.fitElement();
     canvas.start();
