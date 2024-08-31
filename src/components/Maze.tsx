@@ -1,5 +1,4 @@
 import {
-  SceneCollection,
   vector2,
   Square,
   Simulation,
@@ -9,6 +8,8 @@ import {
   Instance,
   matrix4,
   mat4,
+  EmptyElement,
+  color,
 } from "simulationjsv2";
 import Switch from "./Switch";
 import { createSignal, onMount } from "@jacksonotto/pulse";
@@ -26,7 +27,7 @@ const Maze = (props: MazeProps) => {
   const [animate, setAnimate] = createSignal(false);
 
   const animationDelay = props.animationDelay || 10;
-  const squareCollection = new SceneCollection("squares");
+  const squares = new EmptyElement("squares");
   let mazeStates: number[][][] = [];
   let currentState = 0;
 
@@ -38,7 +39,7 @@ const Maze = (props: MazeProps) => {
   );
 
   const squareInstance = new Instance(square, 0);
-  squareCollection.add(squareInstance);
+  squares.add(squareInstance);
 
   const countOccurances = (maze: number[][], value: number) => {
     let total = 0;
@@ -122,7 +123,7 @@ const Maze = (props: MazeProps) => {
     canvas.fitElement();
     canvas.start();
 
-    canvas.add(squareCollection);
+    canvas.add(squares);
 
     generate();
 
